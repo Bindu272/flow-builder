@@ -22,22 +22,17 @@ const FlowBuilder = () => {
     { id: "e1-2", source: "1", target: "2" },
   ]);
 
-  const [nodeName, setNodeName] = useState("Text Message Sender");
+  const [nodeName, setNodeName] = useState({});
 
   useEffect(() => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === "1") {
-          node.data = {
-            ...node.data,
-            label: nodeName,
-          };
-        }
-
-        return node;
-      })
-    );
-  }, [nodeName, setNodes]);
+    const updatedNodes = nodes.map((node) => {
+      return {
+        ...node,
+        data: { ...node.data, label: nodeName[node.id] || node.data.label },
+      };
+    });
+    setNodes(updatedNodes);
+  }, [nodeName, nodes, setNodes]);
 
   const handleDragOver = (event) => {
     event.preventDefault();
@@ -54,25 +49,23 @@ const FlowBuilder = () => {
       position: { x: mouseX, y: mouseY },
     };
     setNodes([...nodes, nodeToAdd]);
+    setNodeName((prev) => ({ ...prev, [id]: "New Node" }));
   };
 
   const handleSaveChanges = () => {
-    const nodesWithEmptyTargets = nodes.filter(node => {
-      const connectedEdgesCount = edges.filter(edge => edge.source === node.id).length;
+    const nodesWithEmptyTargets = nodes.filter((node) => {
+      const connectedEdgesCount = edges.filter((edge) => edge.source === node.id)
+        .length;
       return connectedEdgesCount === 0;
     });
-  
+
     if (nodes.length > 1 && nodesWithEmptyTargets.length > 1) {
       alert("Error: More than one node has empty target handles.");
       return;
     }
-  
+
     console.log("Changes saved successfully.");
   };
-  
-  
-  
-  
 
   return (
     <div>
@@ -98,7 +91,11 @@ const FlowBuilder = () => {
         </button>
       </header>
       <div className="grid-container">
-        <div className="grid-item" onDragOver={handleDragOver} onDrop={handleDrop}>
+        <div
+          className="grid-item"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -111,7 +108,11 @@ const FlowBuilder = () => {
             onConnect={(params) =>
               setEdges((edges) => [
                 ...edges,
-                { id: `${params.source}-${params.target}`, source: params.source, target: params.target }
+                {
+                  id: `${params.source}-${params.target}`,
+                  source: params.source,
+                  target: params.target,
+                },
               ])
             }
           />
@@ -119,8 +120,20 @@ const FlowBuilder = () => {
         <div>
           <div className="message-container node-panel">Message</div>
           <div className="updatenode__controls setting-panel">
-            <label>label:</label>
-            <input value={nodeName} onChange={(evt) => setNodeName(evt.target.value)} />
+            {nodes.map((node) => (
+              <div key={node.id}>
+                <label>{`Label for Node ${node.id}:`}</label>
+                <input
+                  value={nodeName[node.id] || ""}
+                  onChange={(evt) =>
+                    setNodeName((prev) => ({
+                      ...prev,
+                      [node.id]: evt.target.value,
+                    }))
+                  }
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>
