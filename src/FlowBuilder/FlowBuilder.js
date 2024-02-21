@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactFlow, { useNodesState, useEdgesState } from "reactflow";
 import "reactflow/dist/style.css";
+import TextsmsIcon from '@mui/icons-material/Textsms';
 
 const defaultViewport = { x: 0, y: 0, zoom: 1 };
 
@@ -8,14 +9,14 @@ const FlowBuilder = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([
     {
       id: "1",
-      data: { label: "Text Message Sender" },
+      data: { label: "Test Message 1" },
       position: { x: 300, y: 100  },
       targetPosition: 'right ',
       sourcePosition:'left'
     },
     {
       id: "2",
-      data: { label: "Text Message Receiver" },
+      data: { label: "Test Message 2" },
       position: { x: 100, y: 200},
       targetPosition: 'right',
       sourcePosition:'left'
@@ -27,7 +28,7 @@ const FlowBuilder = () => {
   ]);
 
   const [nodeName, setNodeName] = useState({});
-
+const [errorMessage, setErrorMessage]=useState("")
   useEffect(() => {
     const updatedNodes = nodes.map((node) => {
       return {
@@ -66,7 +67,7 @@ const FlowBuilder = () => {
     });
 
     if (nodes.length > 1 && nodesWithEmptyTargets.length > 1) {
-      alert("Error: More than one node has empty target handles.");
+     setErrorMessage("Cannot save flow")
       return;
     }
 
@@ -78,11 +79,14 @@ const FlowBuilder = () => {
       <header
         style={{
           background: "#e6eaedc5",
-          padding: "1rem",
+          padding: "0.5rem",
           display: "flex",
-          justifyContent: "end",
+          justifyContent: "space-around",
         }}
       >
+      {errorMessage ?(<button style={{border:"none",color: "black", background:'#ff000063',
+            padding: "5px",
+            borderRadius: "5px",}}>{errorMessage}</button>):(<span></span>)}
         <button
           style={{
             background: "white",
@@ -98,7 +102,7 @@ const FlowBuilder = () => {
       </header>
       <div className="grid-container">
         <div
-          className="grid-item"
+          className="grid-item-left"
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
@@ -121,10 +125,11 @@ const FlowBuilder = () => {
                 },
               ])
             }
+          
           />
         </div>
-        <div>
-          <div className="message-container node-panel">Message</div>
+        <div className="grid-item-right">
+          <div className="message-container node-panel"><TextsmsIcon color="primary"/>Message</div>
           <div className="updatenode__controls setting-panel">
             {nodes.map((node) => (
               <div key={node.id}>
