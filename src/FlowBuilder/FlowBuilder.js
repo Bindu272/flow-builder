@@ -2,19 +2,23 @@ import React, { useEffect, useState } from "react";
 import ReactFlow, { useNodesState, useEdgesState } from "reactflow";
 import "reactflow/dist/style.css";
 
-const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
+const defaultViewport = { x: 0, y: 0, zoom: 1 };
 
 const FlowBuilder = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([
     {
       id: "1",
       data: { label: "Text Message Sender" },
-      position: { x: 100, y: 100 },
+      position: { x: 300, y: 100  },
+      targetPosition: 'right ',
+      sourcePosition:'left'
     },
     {
       id: "2",
       data: { label: "Text Message Receiver" },
-      position: { x: 300, y: 100 },
+      position: { x: 100, y: 200},
+      targetPosition: 'right',
+      sourcePosition:'left'
     },
   ]);
 
@@ -47,6 +51,8 @@ const FlowBuilder = () => {
       id,
       data: { label: "New Node" },
       position: { x: mouseX, y: mouseY },
+      targetPosition: 'right',
+      sourcePosition:'left'
     };
     setNodes([...nodes, nodeToAdd]);
     setNodeName((prev) => ({ ...prev, [id]: "New Node" }));
